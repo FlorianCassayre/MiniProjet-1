@@ -162,7 +162,7 @@ public class Steganography {
     /**
      * Embeds a black and white image into a color image's LSB layer using spiral embedding
      * @param cover The image in which to embed {@code message}
-     * @param message The image to embed into {@code cover}
+     * @param bwImage The image to embed into {@code cover}
      * @return A <b>copy</b> of {@code cover} with {@code message}'s pixel values embedded in a spiral fashion in the LSB layer
      * @see ImageMessage#bwImageToBitArray(boolean[][])
      * @see Steganography#embedSpiralBitArray(int[][], boolean[])
@@ -244,7 +244,7 @@ public class Steganography {
 
     /**
      * Reveals a boolean array which was embedded in the LSB layer of an image in a spiral fashion
-     * @param cover A color image containing an bit array embedded in its LSB layer
+     * @param hidden A color image containing an bit array embedded in its LSB layer
      * @return The bit array extracted from the LSB layer of {@code cover}
      */
     public static boolean[] revealSpiralBitArray(int[][] hidden) {

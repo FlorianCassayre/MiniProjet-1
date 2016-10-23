@@ -110,7 +110,6 @@ public final class ImageMessage {
      * Converts packed RGB image to grayscale image.
      * @param image a HxW int array
      * @return a HxW int array
-     * @see #encode
      * @see #getGray
      */
     public static int[][] toGray(int[][] image) {
@@ -129,10 +128,9 @@ public final class ImageMessage {
 
     /**
      * Converts grayscale image to packed RGB image.
-     * @param channels a HxW float array
+     * @param gray a HxW grayscale array
      * @return a HxW int array
-     * @see #decode
-     * @see #getRGB(float)
+     * @see #getRGB(int)
      */
     public static int[][] toRGB(int[][] gray) {
         if(gray.length == 0)
