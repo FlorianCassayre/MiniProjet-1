@@ -19,8 +19,7 @@ public final class ImageMessage {
      * @see #getRGB(int, int, int)
      */
     public static int getRed(int rgb) {
-        //TODO: implement me!
-        return 0;
+        return rgb >> 16;
     }
 
     /**
@@ -32,8 +31,7 @@ public final class ImageMessage {
      * @see #getRGB(int, int, int)
      */
     public static int getGreen(int rgb) {
-        //TODO: implement me!
-        return 0;
+        return (rgb >> 8) & 0xff;
     }
 
     /**
@@ -45,8 +43,7 @@ public final class ImageMessage {
      * @see #getRGB(int, int, int)
      */
     public static int getBlue(int rgb) {
-        //TODO: implement me!
-        return 0;
+        return rgb & 0xff;
     }
 
     /**
@@ -59,8 +56,7 @@ public final class ImageMessage {
      * @see #getRGB(int)
      */
     public static int getGray(int rgb) {
-        //TODO: implement me!
-        return 0;
+        return (getRed(rgb) + getGreen(rgb) + getBlue(rgb)) / 3;
     }
 
     /**
@@ -69,8 +65,7 @@ public final class ImageMessage {
      * @return true if gray is greater or equal to threshold, false otherwise
      */
     public static boolean getBW(int gray, int threshold) {
-        //TODO: implement me!
-        return false;
+        return gray >= threshold;
     }
 
     /**
@@ -84,8 +79,7 @@ public final class ImageMessage {
      * @see #getBlue
      */
     public static int getRGB(int red, int green, int blue) {
-        //TODO: implement me!
-        return 0;
+        return (safeColor(red) << 16) + (safeColor(green) << 8) + safeColor(blue);
     }
 
     /**
@@ -95,8 +89,8 @@ public final class ImageMessage {
      * @see #getGray
      */
     public static int getRGB(int gray) {
-        //TODO: implement me!
-        return 0;
+        gray = safeColor(gray);
+        return getRGB(gray, gray, gray);
     }
 
 
@@ -107,8 +101,8 @@ public final class ImageMessage {
     * and encoding of white otherwise
     */
     public static int getRGB(boolean value) {
-        //TODO: implement me!
-        return 0;
+        final int color = value ? 255 : 0;
+        return getRGB(color, color, color);
     }
 
 
@@ -120,8 +114,17 @@ public final class ImageMessage {
      * @see #getGray
      */
     public static int[][] toGray(int[][] image) {
-        //TODO: implement me!
-        return null;
+        if(image.length == 0)
+            return new int[0][0];
+        int[][] grayscale = new int[image.length][image[0].length];
+        for(int line = 0; line < image.length; line++)
+        {
+            for(int row = 0; row < image[0].length; row++)
+            {
+                grayscale[line][row] = getGray(image[line][row]);
+            }
+        }
+        return grayscale;
     }
 
     /**
@@ -132,8 +135,17 @@ public final class ImageMessage {
      * @see #getRGB(float)
      */
     public static int[][] toRGB(int[][] gray) {
-        //TODO: implement me!
-        return null;
+        if(gray.length == 0)
+            return new int[0][0];
+        int[][] packed = new int[gray.length][gray[0].length];
+        for(int line = 0; line < gray.length; line++)
+        {
+            for(int row = 0; row < gray[0].length; row++)
+            {
+                packed[line][row] = getRGB(gray[line][row]);
+            }
+        }
+        return packed;
     }
 
     /**
@@ -143,8 +155,18 @@ public final class ImageMessage {
      * @return a HxW int array
      */
     public static boolean[][] toBW(int[][] gray, int threshold) {
-        //TODO: implement me!
-        return null;
+        if(gray.length == 0)
+            return new boolean[0][0];
+
+        boolean[][] bw = new boolean[gray.length][gray[0].length];
+        for(int line = 0; line < gray.length; line++)
+        {
+            for(int row = 0; row < gray[0].length; row++)
+            {
+                bw[line][row] = getBW(gray[line][row], threshold);
+            }
+        }
+        return bw;
     }
 
     /**
@@ -153,8 +175,17 @@ public final class ImageMessage {
      * @return a HxW int array
      */
     public static int[][] toRGB(boolean[][] image) {
-        //TODO: implement me!
-        return null;
+        if(image.length == 0)
+            return new int[0][0];
+        int[][] packed = new int[image.length][image[0].length];
+        for(int line = 0; line < image.length; line++)
+        {
+            for(int row = 0; row < image[0].length; row++)
+            {
+                packed[line][row] = getRGB(image[line][row]);
+            }
+        }
+        return packed;
     }
 
     /*
@@ -169,8 +200,25 @@ public final class ImageMessage {
      * @see ImageMessage#bitArrayToImage(boolean[])
      */
     public static boolean[] bwImageToBitArray(boolean[][] bwImage) {
-        //TODO: implement me!
-        return null;
+        if(bwImage.length == 0)
+            return new boolean[0];
+        boolean[] array = new boolean[32 * 2 + bwImage.length * bwImage[0].length];
+        boolean[] height = TextMessage.intToBitArray(bwImage.length, 32);
+        boolean[] width = TextMessage.intToBitArray(bwImage[0].length, 32);
+        for(int i = 0; i < 32; i++)
+            array[i] = height[i];
+        for(int i = 0; i < 32; i++)
+            array[32 + i] = width[i];
+        int i = 0;
+        for(int line = 0; line < bwImage.length; line++)
+        {
+            for(int row = 0; row < bwImage[0].length; row++)
+            {
+                array[32 * 2 + i] = bwImage[line][row];
+                i++;
+            }
+        }
+        return array;
     }
 
     /**
@@ -180,8 +228,39 @@ public final class ImageMessage {
      * @see ImageMessage#bwImageToBitArray(boolean[][])
      */
     public static boolean[][] bitArrayToImage(boolean[] bitArray) {
-        //TODO: implement me!
-        return null;
+        if(bitArray.length == 0)
+            return new boolean[0][0];
+        boolean[] bitsHeight = new boolean[32], bitsWidth = new boolean[32];
+        for(int i = 0; i < 32; i++)
+            bitsHeight[i] = bitArray[i];
+        for(int i = 0; i < 32; i++)
+            bitsWidth[i] = bitArray[32 + i];
+        final int height = TextMessage.bitArrayToInt(bitsHeight), width = TextMessage.bitArrayToInt(bitsWidth);
+
+        boolean[][] array = new boolean[height][width];
+        int i = 0;
+        for(int line = 0; line < height; line++)
+        {
+            for(int row = 0; row < width; row++)
+            {
+                array[line][row] = bitArray[64 + i];
+                i++;
+            }
+        }
+        return array;
     }
 
+    /**
+     * Returns a safe color value
+     * @param value the color to process
+     * @return a value between 0 and 255
+     */
+    public static int safeColor(int value)
+    {
+        if(value < 0 && false)
+            value = 0;
+        if(value > 255 && false)
+            value = 255;
+        return value;
+    }
 }

@@ -15,8 +15,12 @@ public class TextMessage {
      * @return A boolean array corresponding to {@code value}'s {@code bits}-bit binary representation
      */
     public static boolean[] intToBitArray(int value, int bits) {
-        //TODO: implement me!
-        return null;
+        boolean[] array = new boolean[bits];
+        for(int i = 0; i < bits; i++)
+        {
+            array[i] = ((value >> i) & 1) == 1;
+        }
+        return array;
     }
 
     /**
@@ -25,8 +29,12 @@ public class TextMessage {
      * @return The integer that the array represented
      */
     public static int bitArrayToInt(boolean[] bitArray) {
-        //TODO: implement me!
-        return 0;
+        int value = 0;
+        for(int i = 0; i < bitArray.length; i++)
+        {
+            value += bitArray[i] ? (1 << i) : 0;
+        }
+        return value;
     }
 
     /**
@@ -35,8 +43,17 @@ public class TextMessage {
      * @return A boolean array corresponding to the String's binary representation
      */
     public static boolean[] stringToBitArray(String message) {
-        //TODO: implement me!
-        return null;
+        boolean[] array = new boolean[message.length() * 16];
+        for(int i = 0; i < message.length(); i++)
+        {
+            final char c = message.charAt(i);
+            final boolean[] bits = intToBitArray(c, 16);
+            for(int j = 0; j < 16; j++)
+            {
+                array[i * 16 + j] = bits[j];
+            }
+        }
+        return array;
     }
 
     /**
@@ -46,8 +63,18 @@ public class TextMessage {
      * @see TextMessage#stringToBitArray(String)
      */
     public static String bitArrayToString(boolean[] bitArray) {
-        //TODO: implement me!
-        return null;
+        char[] characters = new char[bitArray.length >> 4];
+
+        for(int i = 0; i < (bitArray.length >> 4); i++)
+        {
+            boolean[] array = new boolean[16];
+            for(int j = 0; j < 16; j++)
+            {
+                array[j] = bitArray[i * 16 + j];
+            }
+            characters[i] = (char) bitArrayToInt(array);
+        }
+        return new String(characters);
     }
 
 }

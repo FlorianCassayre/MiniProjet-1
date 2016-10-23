@@ -20,8 +20,7 @@ public class Steganography {
      * @return An int corresponding to {@code value} with {@code m} inserted into its LSB
      */
     public static int embedInLSB(int value, boolean m) {
-        //TODO: implement me!
-        return 0;
+        return (value & 0xfffffffe) | (m ? 1 : 0);
     }
 
     /**
@@ -30,8 +29,7 @@ public class Steganography {
      * @return A boolean corresponding to the value of {@code value}'s LSB
      */
     public static boolean getLSB(int value) {
-        //TODO: implement me!
-        return false;
+        return (value & 1) == 1;
     }
 
     /*
@@ -44,8 +42,21 @@ public class Steganography {
      * @return A <b>copy</b> of {@code cover} with {@code message}'s pixel values embedded in a linear fashion in the LSB layer
      */
     public static int[][] embedBWImage(int[][] cover, boolean[][] message) {
-        //TODO: implement me!
-        return null;
+        if(cover.length == 0)
+            return new int[0][0];
+        int[][] copy = new int[cover.length][cover[0].length];
+
+        for(int line = 0; line < cover.length; line++)
+        {
+            for(int row = 0; row < cover[0].length; row++)
+            {
+                boolean bit = getLSB(cover[line][row]);
+                if(message.length > 0 && line < message.length && row < message[0].length)
+                    bit = message[line][row];
+                copy[line][row] = embedInLSB(cover[line][row], bit);
+            }
+        }
+        return copy;
     }
 
     /**
@@ -54,8 +65,18 @@ public class Steganography {
      * @return The image extracted from the LSB layer of {@code cover}
      */
     public static boolean[][] revealBWImage(int[][] cover) {
-        //TODO: implement me!
-        return null;
+        if(cover.length == 0)
+            return new boolean[0][0];
+        boolean[][] reveal = new boolean[cover.length][cover[0].length];
+
+        for(int line = 0; line < cover.length; line++)
+        {
+            for(int row = 0; row < cover[0].length; row++)
+            {
+                reveal[line][row] = getLSB(cover[line][row]);
+            }
+        }
+        return reveal;
     }
 
     /*
@@ -72,8 +93,19 @@ public class Steganography {
      * @return A <b>copy</b> of {@code cover} with {@code message}'s values embedded in a linear fashion in the LSB layer
      */
     public static int[][] embedBitArray(int[][] cover, boolean[] message) {
-        //TODO: implement me!
-        return null;
+        if(cover.length == 0)
+            return new int[0][0];
+        int[][] copy = new int[cover.length][cover[0].length];
+        int i = 0;
+        for(int line = 0; line < cover.length; line++)
+        {
+            for(int row = 0; row < cover[0].length; row++)
+            {
+                copy[line][row] = i < message.length ? embedInLSB(cover[line][row], message[i]) : cover[line][row];
+                i++;
+            }
+        }
+        return copy;
     }
 
     /**
@@ -82,8 +114,20 @@ public class Steganography {
      * @return The bit array extracted from the LSB layer of {@code cover}
      */
     public static boolean[] revealBitArray(int[][] cover) {
-        //TODO: implement me!
-        return null;
+        if(cover.length == 0)
+            return new boolean[0];
+        boolean[] array = new boolean[cover.length * cover[0].length];
+        int i = 0;
+        for(int line = 0; line < cover.length; line++)
+        {
+            for(int row = 0; row < cover[0].length; row++)
+            {
+                array[i] = getLSB(cover[line][row]);
+                i++;
+            }
+        }
+
+        return array;
     }
 
     /**
@@ -95,8 +139,7 @@ public class Steganography {
      * @see Steganography#embedBitArray(int[][], boolean[])
      */
     public static int[][] embedText(int[][] cover, String message) {
-        //TODO: implement me!
-        return null;
+        return embedBitArray(cover, TextMessage.stringToBitArray(message));
     }
 
     /**
@@ -106,8 +149,7 @@ public class Steganography {
      * @see TextMessage#bitArrayToString(boolean[])
      */
     public static String revealText(int[][] cover) {
-        //TODO: implement me!
-        return null;
+        return TextMessage.bitArrayToString(revealBitArray(cover));
     }
 
     /*
@@ -126,8 +168,8 @@ public class Steganography {
      * @see Steganography#embedSpiralBitArray(int[][], boolean[])
      */
     public static int[][] embedSpiralImage(int[][] cover, boolean[][] bwImage) {
-        //TODO: implement me!
-        return null;
+        boolean[] bits = ImageMessage.bwImageToBitArray(bwImage);
+        return embedSpiralBitArray(cover, bits);
     }
 
     /**
@@ -138,8 +180,8 @@ public class Steganography {
      * @see Steganography#revealSpiralBitArray(int[][])
      */
     public static boolean[][] revealSpiralImage(int[][] cover) {
-        //TODO: implement me!
-        return null;
+        boolean[] bits = revealSpiralBitArray(cover);
+        return ImageMessage.bitArrayToImage(bits);
     }
 
     /**
@@ -149,9 +191,55 @@ public class Steganography {
      * @return A <b>copy</b> of {@code cover} with {@code message}'s values embedded in a spiral fashion in the LSB layer
      */
     public static int[][] embedSpiralBitArray(int[][] cover, boolean[] message) {
-        //TODO: implement me!
-		assert(Utils.isCoverLargeEnough(cover, message)); // example of how to use assertions
-        return null;
+        if(cover.length == 0)
+            return new int[0][0];
+
+        assert(Utils.isCoverLargeEnough(cover, message));
+
+        int[][] copy = new int[cover.length][cover[0].length];
+        for(int line = 0; line < cover.length; line++)
+            for(int row = 0; row < cover[0].length; row++)
+                copy[line][row] = cover[line][row];
+
+        int minLine = 0, maxLine = cover.length - 1, minRow = 0, maxRow = cover[0].length - 1;
+        int line = 0, row = 0;
+        int dir = 0;
+        for(int i = 0; i < message.length; i++)
+        {
+            copy[line][row] = embedInLSB(cover[line][row], message[i]); // Replacement
+
+            if(row == maxRow && dir == 0)
+            {
+                minLine++;
+                dir++;
+            }
+            else if(line == maxLine && dir == 1)
+            {
+                maxRow--;
+                dir++;
+            }
+            else if(row == minRow && dir == 2)
+            {
+                maxLine--;
+                dir++;
+            }
+            else if(line == minLine && dir == 3)
+            {
+                minRow++;
+                dir = 0;
+            }
+
+            if(dir == 0)
+                row++;
+            else if(dir == 1)
+                line++;
+            else if(dir == 2)
+                row--;
+            else if(dir == 3)
+                line--;
+        }
+
+        return copy;
     }
 
     /**
@@ -160,8 +248,49 @@ public class Steganography {
      * @return The bit array extracted from the LSB layer of {@code cover}
      */
     public static boolean[] revealSpiralBitArray(int[][] hidden) {
-        //TODO: implement me!
-        return null;
+        if(hidden.length == 0)
+            return new boolean[0];
+        boolean[] bits = new boolean[hidden.length * hidden[0].length];
+
+        int minLine = 0, maxLine = hidden.length - 1, minRow = 0, maxRow = hidden[0].length - 1;
+        int line = 0, row = 0;
+        int dir = 0;
+        for(int i = 0; i < bits.length; i++)
+        {
+            bits[i] = getLSB(hidden[line][row]); // Replacement
+
+            if(row == maxRow && dir == 0)
+            {
+                minLine++;
+                dir++;
+            }
+            else if(line == maxLine && dir == 1)
+            {
+                maxRow--;
+                dir++;
+            }
+            else if(row == minRow && dir == 2)
+            {
+                maxLine--;
+                dir++;
+            }
+            else if(line == minLine && dir == 3)
+            {
+                minRow++;
+                dir = 0;
+            }
+
+            if(dir == 0)
+                row++;
+            else if(dir == 1)
+                line++;
+            else if(dir == 2)
+                row--;
+            else if(dir == 3)
+                line--;
+        } // TODO: cleaning
+
+        return bits;
     }
 
 }
