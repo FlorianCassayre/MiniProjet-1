@@ -19,7 +19,7 @@ public final class ImageMessage {
      * @see #getRGB(int, int, int)
      */
     public static int getRed(int rgb) {
-        return rgb >> 16;
+        return Utils.clearAlpha(rgb) >> 16;
     }
 
     /**
@@ -31,7 +31,7 @@ public final class ImageMessage {
      * @see #getRGB(int, int, int)
      */
     public static int getGreen(int rgb) {
-        return (rgb >> 8) & 0xff;
+        return (Utils.clearAlpha(rgb) >> 8) & 0xff;
     }
 
     /**
@@ -43,7 +43,7 @@ public final class ImageMessage {
      * @see #getRGB(int, int, int)
      */
     public static int getBlue(int rgb) {
-        return rgb & 0xff;
+        return Utils.clearAlpha(rgb) & 0xff;
     }
 
     /**
@@ -79,7 +79,7 @@ public final class ImageMessage {
      * @see #getBlue
      */
     public static int getRGB(int red, int green, int blue) {
-        return (safeColor(red) << 16) + (safeColor(green) << 8) + safeColor(blue);
+        return (Utils.safeColor(red) << 16) + (Utils.safeColor(green) << 8) + Utils.safeColor(blue);
     }
 
     /**
@@ -89,7 +89,6 @@ public final class ImageMessage {
      * @see #getGray
      */
     public static int getRGB(int gray) {
-        gray = safeColor(gray);
         return getRGB(gray, gray, gray);
     }
 
@@ -113,8 +112,9 @@ public final class ImageMessage {
      * @see #getGray
      */
     public static int[][] toGray(int[][] image) {
-        if(image.length == 0)
-            return new int[0][0];
+        if(!Utils.isImage(image))
+            return null;
+
         int[][] grayscale = new int[image.length][image[0].length];
         for(int line = 0; line < image.length; line++)
         {
@@ -133,8 +133,9 @@ public final class ImageMessage {
      * @see #getRGB(int)
      */
     public static int[][] toRGB(int[][] gray) {
-        if(gray.length == 0)
-            return new int[0][0];
+        if(!Utils.isImage(gray))
+            return null;
+
         int[][] packed = new int[gray.length][gray[0].length];
         for(int line = 0; line < gray.length; line++)
         {
@@ -153,8 +154,8 @@ public final class ImageMessage {
      * @return a HxW int array
      */
     public static boolean[][] toBW(int[][] gray, int threshold) {
-        if(gray.length == 0)
-            return new boolean[0][0];
+        if(!Utils.isImage(gray))
+            return null;
 
         boolean[][] bw = new boolean[gray.length][gray[0].length];
         for(int line = 0; line < gray.length; line++)
@@ -173,8 +174,9 @@ public final class ImageMessage {
      * @return a HxW int array
      */
     public static int[][] toRGB(boolean[][] image) {
-        if(image.length == 0)
-            return new int[0][0];
+        if(!Utils.isImage(image))
+            return null;
+
         int[][] packed = new int[image.length][image[0].length];
         for(int line = 0; line < image.length; line++)
         {
@@ -198,8 +200,9 @@ public final class ImageMessage {
      * @see ImageMessage#bitArrayToImage(boolean[])
      */
     public static boolean[] bwImageToBitArray(boolean[][] bwImage) {
-        if(bwImage.length == 0)
-            return new boolean[0];
+        if(!Utils.isImage(bwImage))
+            return null;
+
         boolean[] array = new boolean[32 * 2 + bwImage.length * bwImage[0].length];
         boolean[] height = TextMessage.intToBitArray(bwImage.length, 32);
         boolean[] width = TextMessage.intToBitArray(bwImage[0].length, 32);
@@ -228,6 +231,7 @@ public final class ImageMessage {
     public static boolean[][] bitArrayToImage(boolean[] bitArray) {
         if(bitArray.length == 0)
             return new boolean[0][0];
+
         boolean[] bitsHeight = new boolean[32], bitsWidth = new boolean[32];
         for(int i = 0; i < 32; i++)
             bitsHeight[i] = bitArray[i];
@@ -246,19 +250,5 @@ public final class ImageMessage {
             }
         }
         return array;
-    }
-
-    /**
-     * Returns a safe color value
-     * @param value the color to process
-     * @return a value between 0 and 255
-     */
-    public static int safeColor(int value)
-    {
-        if(value < 0)
-            value = 0;
-        if(value > 255)
-            value = 255;
-        return value;
     }
 }
