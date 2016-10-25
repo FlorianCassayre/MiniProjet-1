@@ -255,9 +255,9 @@ public final class ImageMessage {
      */
     public static int safeColor(int value)
     {
-        if(value < 0 && false)
+        if(value < 0)
             value = 0;
-        if(value > 255 && false)
+        if(value > 255)
             value = 255;
         return value;
     }
