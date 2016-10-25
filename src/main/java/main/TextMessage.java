@@ -74,7 +74,7 @@ public class TextMessage {
             }
             characters[i] = (char) bitArrayToInt(array);
         }
-        return new String(characters);
+        return new String(characters).replace("\r", "");
     }
 
 }
