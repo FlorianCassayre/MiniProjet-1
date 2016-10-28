@@ -29,6 +29,8 @@ public class TextMessage {
      * @return The integer that the array represented
      */
     public static int bitArrayToInt(boolean[] bitArray) {
+        assert bitArray != null;
+
         int value = 0;
         for(int i = 0; i < bitArray.length; i++)
         {
@@ -43,6 +45,8 @@ public class TextMessage {
      * @return A boolean array corresponding to the String's binary representation
      */
     public static boolean[] stringToBitArray(String message) {
+        assert message != null;
+
         boolean[] array = new boolean[message.length() * 16];
         for(int i = 0; i < message.length(); i++)
         {
@@ -63,6 +67,8 @@ public class TextMessage {
      * @see TextMessage#stringToBitArray(String)
      */
     public static String bitArrayToString(boolean[] bitArray) {
+        assert bitArray != null;
+
         char[] characters = new char[bitArray.length >> 4];
 
         for(int i = 0; i < (bitArray.length >> 4); i++)
@@ -74,7 +80,7 @@ public class TextMessage {
             }
             characters[i] = (char) bitArrayToInt(array);
         }
-        return new String(characters).replace("\r", "");
+        return new String(characters);//.replace("\r", "");
     }
 
 }

@@ -112,8 +112,7 @@ public final class ImageMessage {
      * @see #getGray
      */
     public static int[][] toGray(int[][] image) {
-        if(!Utils.isImage(image))
-            return null;
+        assert Utils.isImage(image);
 
         int[][] grayscale = new int[image.length][image[0].length];
         for(int line = 0; line < image.length; line++)
@@ -133,8 +132,7 @@ public final class ImageMessage {
      * @see #getRGB(int)
      */
     public static int[][] toRGB(int[][] gray) {
-        if(!Utils.isImage(gray))
-            return null;
+        assert Utils.isImage(gray);
 
         int[][] packed = new int[gray.length][gray[0].length];
         for(int line = 0; line < gray.length; line++)
@@ -154,8 +152,7 @@ public final class ImageMessage {
      * @return a HxW int array
      */
     public static boolean[][] toBW(int[][] gray, int threshold) {
-        if(!Utils.isImage(gray))
-            return null;
+        assert Utils.isImage(gray);
 
         boolean[][] bw = new boolean[gray.length][gray[0].length];
         for(int line = 0; line < gray.length; line++)
@@ -174,8 +171,7 @@ public final class ImageMessage {
      * @return a HxW int array
      */
     public static int[][] toRGB(boolean[][] image) {
-        if(!Utils.isImage(image))
-            return null;
+        assert Utils.isImage(image);
 
         int[][] packed = new int[image.length][image[0].length];
         for(int line = 0; line < image.length; line++)
@@ -200,8 +196,7 @@ public final class ImageMessage {
      * @see ImageMessage#bitArrayToImage(boolean[])
      */
     public static boolean[] bwImageToBitArray(boolean[][] bwImage) {
-        if(!Utils.isImage(bwImage))
-            return null;
+        assert Utils.isImage(bwImage);
 
         boolean[] array = new boolean[32 * 2 + bwImage.length * bwImage[0].length];
         boolean[] height = TextMessage.intToBitArray(bwImage.length, 32);
@@ -229,8 +224,7 @@ public final class ImageMessage {
      * @see ImageMessage#bwImageToBitArray(boolean[][])
      */
     public static boolean[][] bitArrayToImage(boolean[] bitArray) {
-        if(bitArray.length == 0)
-            return new boolean[0][0];
+        assert bitArray != null && bitArray.length >= 32 * 2;
 
         boolean[] bitsHeight = new boolean[32], bitsWidth = new boolean[32];
         for(int i = 0; i < 32; i++)
@@ -238,6 +232,8 @@ public final class ImageMessage {
         for(int i = 0; i < 32; i++)
             bitsWidth[i] = bitArray[32 + i];
         final int height = TextMessage.bitArrayToInt(bitsHeight), width = TextMessage.bitArrayToInt(bitsWidth);
+
+        assert bitArray.length >= 32 * 2 + width * height;
 
         boolean[][] array = new boolean[height][width];
         int i = 0;

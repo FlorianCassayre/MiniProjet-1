@@ -42,8 +42,7 @@ public class Steganography {
      * @return A <b>copy</b> of {@code cover} with {@code message}'s pixel values embedded in a linear fashion in the LSB layer
      */
     public static int[][] embedBWImage(int[][] cover, boolean[][] message) {
-        if(!Utils.isCoverLargeEnough(cover, message))
-            return null;
+        assert Utils.isCoverLargeEnough(cover, message);
 
         int[][] copy = new int[cover.length][cover[0].length];
 
@@ -66,8 +65,7 @@ public class Steganography {
      * @return The image extracted from the LSB layer of {@code cover}
      */
     public static boolean[][] revealBWImage(int[][] cover) {
-        if(!Utils.isImage(cover))
-            return null;
+        assert Utils.isImage(cover);
 
         boolean[][] reveal = new boolean[cover.length][cover[0].length];
 
@@ -95,8 +93,8 @@ public class Steganography {
      * @return A <b>copy</b> of {@code cover} with {@code message}'s values embedded in a linear fashion in the LSB layer
      */
     public static int[][] embedBitArray(int[][] cover, boolean[] message) {
-        if(!Utils.isCoverLargeEnough(cover, message))
-            return null;
+        assert Utils.isCoverLargeEnough(cover, message);
+
 
         int[][] copy = new int[cover.length][cover[0].length];
         int i = 0;
@@ -117,8 +115,7 @@ public class Steganography {
      * @return The bit array extracted from the LSB layer of {@code cover}
      */
     public static boolean[] revealBitArray(int[][] cover) {
-        if(!Utils.isImage(cover))
-            return null;
+        assert Utils.isImage(cover);
 
         boolean[] array = new boolean[cover.length * cover[0].length];
         int i = 0;
@@ -195,10 +192,8 @@ public class Steganography {
      * @return A <b>copy</b> of {@code cover} with {@code message}'s values embedded in a spiral fashion in the LSB layer
      */
     public static int[][] embedSpiralBitArray(int[][] cover, boolean[] message) {
-        if(cover.length == 0)
-            return new int[0][0];
-
-        assert(Utils.isCoverLargeEnough(cover, message));
+        assert Utils.isCoverLargeEnough(cover, message);
+        assert cover.length * cover[0].length >= message.length;
 
         int[][] copy = new int[cover.length][cover[0].length];
         for(int line = 0; line < cover.length; line++)
@@ -252,8 +247,8 @@ public class Steganography {
      * @return The bit array extracted from the LSB layer of {@code cover}
      */
     public static boolean[] revealSpiralBitArray(int[][] hidden) {
-        if(hidden.length == 0)
-            return new boolean[0];
+        assert Utils.isImage(hidden);
+
         boolean[] bits = new boolean[hidden.length * hidden[0].length];
 
         int minLine = 0, maxLine = hidden.length - 1, minRow = 0, maxRow = hidden[0].length - 1;
