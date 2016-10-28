@@ -97,28 +97,4 @@ public class Utils {
         }
         return true;
     }
-
-    /**
-     * Returns a safe color value
-     * @param value the color value to process
-     * @return a value between 0 and 255
-     */
-    public static int safeColor(int value)
-    {
-        if(value < 0)
-            value = 0;
-        if(value > 255)
-            value = 255;
-        return value;
-    }
-
-    /**
-     * Clears the alpha channel of a packed color
-     * @param rgb the packet RBG color
-     * @return a packet RBG color without alpha
-     */
-    public static int clearAlpha(int rgb)
-    {
-        return rgb & 0x00ffffff;
-    }
 }

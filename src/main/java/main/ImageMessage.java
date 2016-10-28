@@ -19,7 +19,7 @@ public final class ImageMessage {
      * @see #getRGB(int, int, int)
      */
     public static int getRed(int rgb) {
-        return Utils.clearAlpha(rgb) >> 16;
+        return clearAlpha(rgb) >> 16;
     }
 
     /**
@@ -31,7 +31,7 @@ public final class ImageMessage {
      * @see #getRGB(int, int, int)
      */
     public static int getGreen(int rgb) {
-        return (Utils.clearAlpha(rgb) >> 8) & 0xff;
+        return (clearAlpha(rgb) >> 8) & 0xff;
     }
 
     /**
@@ -43,7 +43,7 @@ public final class ImageMessage {
      * @see #getRGB(int, int, int)
      */
     public static int getBlue(int rgb) {
-        return Utils.clearAlpha(rgb) & 0xff;
+        return clearAlpha(rgb) & 0xff;
     }
 
     /**
@@ -79,7 +79,7 @@ public final class ImageMessage {
      * @see #getBlue
      */
     public static int getRGB(int red, int green, int blue) {
-        return (Utils.safeColor(red) << 16) + (Utils.safeColor(green) << 8) + Utils.safeColor(blue);
+        return (safeColor(red) << 16) + (safeColor(green) << 8) + safeColor(blue);
     }
 
     /**
@@ -250,5 +250,30 @@ public final class ImageMessage {
             }
         }
         return array;
+    }
+
+
+    /**
+     * Returns a safe color value
+     * @param value the color value to process
+     * @return a value between 0 and 255
+     */
+    public static int safeColor(int value)
+    {
+        if(value < 0)
+            value = 0;
+        if(value > 255)
+            value = 255;
+        return value;
+    }
+
+    /**
+     * Clears the alpha channel of a packed color
+     * @param rgb the packet RBG color
+     * @return a packet RBG color without alpha
+     */
+    public static int clearAlpha(int rgb)
+    {
+        return rgb & 0x00ffffff;
     }
 }
