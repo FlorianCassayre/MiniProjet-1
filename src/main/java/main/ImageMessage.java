@@ -19,7 +19,7 @@ public final class ImageMessage {
      * @see #getRGB(int, int, int)
      */
     public static int getRed(int rgb) {
-        return clearAlpha(rgb) >> 16;
+        return clearAlpha(rgb) >> 16; // Red 0x00XX0000
     }
 
     /**
@@ -31,7 +31,7 @@ public final class ImageMessage {
      * @see #getRGB(int, int, int)
      */
     public static int getGreen(int rgb) {
-        return (clearAlpha(rgb) >> 8) & 0xff;
+        return (clearAlpha(rgb) >> 8) & 0xff; // Green 0x0000XX00
     }
 
     /**
@@ -43,7 +43,7 @@ public final class ImageMessage {
      * @see #getRGB(int, int, int)
      */
     public static int getBlue(int rgb) {
-        return clearAlpha(rgb) & 0xff;
+        return clearAlpha(rgb) & 0xff; // Blue 0x000000XX
     }
 
     /**
@@ -79,7 +79,7 @@ public final class ImageMessage {
      * @see #getBlue
      */
     public static int getRGB(int red, int green, int blue) {
-        return (safeColor(red) << 16) + (safeColor(green) << 8) + safeColor(blue);
+        return (safeColor(red) << 16) + (safeColor(green) << 8) + safeColor(blue); // RGB 0x00RRGGBB
     }
 
     /**
@@ -198,15 +198,15 @@ public final class ImageMessage {
     public static boolean[] bwImageToBitArray(boolean[][] bwImage) {
         assert Utils.isImage(bwImage);
 
-        boolean[] array = new boolean[32 * 2 + bwImage.length * bwImage[0].length];
-        boolean[] height = TextMessage.intToBitArray(bwImage.length, 32);
-        boolean[] width = TextMessage.intToBitArray(bwImage[0].length, 32);
-        for(int i = 0; i < 32; i++)
+        boolean[] array = new boolean[32 * 2 + bwImage.length * bwImage[0].length]; // All the data (hence height + width + bwImage)
+        boolean[] height = TextMessage.intToBitArray(bwImage.length, 32); // 32-bit integer to store height
+        boolean[] width = TextMessage.intToBitArray(bwImage[0].length, 32); // 32-bit integer to store width
+        for(int i = 0; i < 32; i++) // Encode height
             array[i] = height[i];
-        for(int i = 0; i < 32; i++)
+        for(int i = 0; i < 32; i++) // Encode width
             array[32 + i] = width[i];
         int i = 0;
-        for(int line = 0; line < bwImage.length; line++)
+        for(int line = 0; line < bwImage.length; line++) // Encode bwImage
         {
             for(int row = 0; row < bwImage[0].length; row++)
             {
@@ -224,20 +224,20 @@ public final class ImageMessage {
      * @see ImageMessage#bwImageToBitArray(boolean[][])
      */
     public static boolean[][] bitArrayToImage(boolean[] bitArray) {
-        assert bitArray != null && bitArray.length >= 32 * 2;
+        assert bitArray != null && bitArray.length >= 32 * 2; // Checks if the array contains height and width data
 
         boolean[] bitsHeight = new boolean[32], bitsWidth = new boolean[32];
-        for(int i = 0; i < 32; i++)
+        for(int i = 0; i < 32; i++) // Decode height
             bitsHeight[i] = bitArray[i];
-        for(int i = 0; i < 32; i++)
+        for(int i = 0; i < 32; i++) // Decode width
             bitsWidth[i] = bitArray[32 + i];
         final int height = TextMessage.bitArrayToInt(bitsHeight), width = TextMessage.bitArrayToInt(bitsWidth);
 
-        assert bitArray.length >= 32 * 2 + width * height;
+        assert bitArray.length >= 32 * 2 + width * height; // Checks if the data to read corresponds to the length specified
 
         boolean[][] array = new boolean[height][width];
         int i = 0;
-        for(int line = 0; line < height; line++)
+        for(int line = 0; line < height; line++) // Decode bwImage
         {
             for(int row = 0; row < width; row++)
             {

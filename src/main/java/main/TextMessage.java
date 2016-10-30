@@ -18,7 +18,7 @@ public class TextMessage {
         boolean[] array = new boolean[bits];
         for(int i = 0; i < bits; i++)
         {
-            array[i] = ((value >> i) & 1) == 1;
+            array[i] = ((value >> i) & 1) == 1; // Applying a mask and shifting
         }
         return array;
     }
@@ -34,7 +34,7 @@ public class TextMessage {
         int value = 0;
         for(int i = 0; i < bitArray.length; i++)
         {
-            value += bitArray[i] ? (1 << i) : 0;
+            value |= bitArray[i] ? (1 << i) : 0; // Shifting and encoding
         }
         return value;
     }
@@ -48,11 +48,11 @@ public class TextMessage {
         assert message != null;
 
         boolean[] array = new boolean[message.length() * 16];
-        for(int i = 0; i < message.length(); i++)
+        for(int i = 0; i < message.length(); i++) // For every characters in message
         {
             final char c = message.charAt(i);
             final boolean[] bits = intToBitArray(c, 16);
-            for(int j = 0; j < 16; j++)
+            for(int j = 0; j < 16; j++) // Encode the 16-bit character
             {
                 array[i * 16 + j] = bits[j];
             }
@@ -71,16 +71,16 @@ public class TextMessage {
 
         char[] characters = new char[bitArray.length >> 4];
 
-        for(int i = 0; i < (bitArray.length >> 4); i++)
+        for(int i = 0; i < (bitArray.length >> 4); i++) // For every 16-bit array in bitArray
         {
             boolean[] array = new boolean[16];
-            for(int j = 0; j < 16; j++)
+            for(int j = 0; j < 16; j++) // Decode the array and converts it into a character
             {
                 array[j] = bitArray[i * 16 + j];
             }
             characters[i] = (char) bitArrayToInt(array);
         }
-        return new String(characters);//.replace("\r", "");
+        return new String(characters);//.replace("\r", ""); // Formerly used to remove unwanted characters that prevented the message to be read
     }
 
 }

@@ -46,14 +46,14 @@ public class Steganography {
 
         int[][] copy = new int[cover.length][cover[0].length];
 
-        for(int line = 0; line < cover.length; line++)
+        for(int line = 0; line < cover.length; line++) // For every pixel
         {
             for(int row = 0; row < cover[0].length; row++)
             {
                 boolean bit = getLSB(cover[line][row]);
-                if(message.length > 0 && line < message.length && row < message[0].length)
+                if(message.length > 0 && line < message.length && row < message[0].length) // Checks if the message is in the bounds
                     bit = message[line][row];
-                copy[line][row] = embedInLSB(cover[line][row], bit);
+                copy[line][row] = embedInLSB(cover[line][row], bit); // Embeds message or copy the cover
             }
         }
         return copy;
@@ -73,7 +73,7 @@ public class Steganography {
         {
             for(int row = 0; row < cover[0].length; row++)
             {
-                reveal[line][row] = getLSB(cover[line][row]);
+                reveal[line][row] = getLSB(cover[line][row]); // Get the least significant bit
             }
         }
         return reveal;
@@ -102,7 +102,7 @@ public class Steganography {
         {
             for(int row = 0; row < cover[0].length; row++)
             {
-                copy[line][row] = i < message.length ? embedInLSB(cover[line][row], message[i]) : cover[line][row];
+                copy[line][row] = i < message.length ? embedInLSB(cover[line][row], message[i]) : cover[line][row]; // If the message is in the bounds, embeds it else copy the cover
                 i++;
             }
         }
@@ -193,49 +193,35 @@ public class Steganography {
      */
     public static int[][] embedSpiralBitArray(int[][] cover, boolean[] message) {
         assert Utils.isCoverLargeEnough(cover, message);
-        assert cover.length * cover[0].length >= message.length;
+        assert cover.length * cover[0].length >= message.length; // Checks if the message is not too long
 
         int[][] copy = new int[cover.length][cover[0].length];
-        for(int line = 0; line < cover.length; line++)
+        for(int line = 0; line < cover.length; line++) // Copy the cover
             for(int row = 0; row < cover[0].length; row++)
                 copy[line][row] = cover[line][row];
 
         int minLine = 0, maxLine = cover.length - 1, minRow = 0, maxRow = cover[0].length - 1;
         int line = 0, row = 0;
         int dir = 0;
-        for(int i = 0; i < message.length; i++)
+        for(int i = 0; i < message.length; i++) // For every character
         {
             copy[line][row] = embedInLSB(cover[line][row], message[i]); // Replacement
 
+            // Turns around if the cursor reaches a border
             if(row == maxRow && dir == 0)
-            {
                 minLine++;
-                dir++;
-            }
             else if(line == maxLine && dir == 1)
-            {
                 maxRow--;
-                dir++;
-            }
             else if(row == minRow && dir == 2)
-            {
                 maxLine--;
-                dir++;
-            }
             else if(line == minLine && dir == 3)
-            {
                 minRow++;
-                dir = 0;
-            }
+            else
+                dir--; // Decrementing (will be incremented again afterwards to restore the state back)
+            dir = (dir + 1) % 4; // Incrementing and modulo 4
 
-            if(dir == 0)
-                row++;
-            else if(dir == 1)
-                line++;
-            else if(dir == 2)
-                row--;
-            else if(dir == 3)
-                line--;
+            row += projectionX(dir);
+            line += projectionY(dir);
         }
 
         return copy;
@@ -258,38 +244,54 @@ public class Steganography {
         {
             bits[i] = getLSB(hidden[line][row]); // Replacement
 
+            // Turns around if the cursor reaches a border
             if(row == maxRow && dir == 0)
-            {
                 minLine++;
-                dir++;
-            }
             else if(line == maxLine && dir == 1)
-            {
                 maxRow--;
-                dir++;
-            }
             else if(row == minRow && dir == 2)
-            {
                 maxLine--;
-                dir++;
-            }
             else if(line == minLine && dir == 3)
-            {
                 minRow++;
-                dir = 0;
-            }
+            else
+                dir--; // Decrementing (will be incremented again afterwards to restore the state back)
+            dir = (dir + 1) % 4; // Incrementing and modulo 4
 
-            if(dir == 0)
-                row++;
-            else if(dir == 1)
-                line++;
-            else if(dir == 2)
-                row--;
-            else if(dir == 3)
-                line--;
+            row += projectionX(dir);
+            line += projectionY(dir);
         } // TODO: cleaning
 
         return bits;
+    }
+
+    /**
+     * Projects the direction on the X-axis
+     * @param direction a direction between 0 and 4 (excluded)
+     * @return the x projection
+     */
+    public static int projectionX(int direction)
+    {
+        direction = (direction + 4) % 4; // Positive modulo 4
+        if(direction == 0)
+            return 1;
+        if(direction == 2)
+            return -1;
+        return 0;
+    }
+
+    /**
+     * Projects the direction on the Y-axis
+     * @param direction a direction between 0 and 4 (excluded)
+     * @return the y projection
+     */
+    public static int projectionY(int direction)
+    {
+        direction = (direction + 4) % 4; // Positive modulo 4
+        if(direction == 1)
+            return 1;
+        if(direction == 3)
+            return -1;
+        return 0;
     }
 
 }
