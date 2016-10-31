@@ -8,6 +8,9 @@ public class TextMessage {
      * Part 2a: prepare text message (text <-> bit array)
      * ********************************************
      */
+
+    private static final int cSize=Character.SIZE;
+
     /**
      * Converts an integer to its binary representation
      * @param value The integer to be converted
@@ -47,14 +50,14 @@ public class TextMessage {
     public static boolean[] stringToBitArray(String message) {
         assert message != null;
 
-        boolean[] array = new boolean[message.length() * Character.SIZE];
+        boolean[] array = new boolean[message.length() * cSize];
         for(int i = 0; i < message.length(); i++) // For every characters in message
         {
             final char c = message.charAt(i);
-            final boolean[] bits = intToBitArray(c, Character.SIZE);
-            for(int j = 0; j < Character.SIZE; j++) // Encode the 16-bit character
+            final boolean[] bits = intToBitArray(c, cSize);
+            for(int j = 0; j < cSize; j++) // Encode the 16-bit character
             {
-                array[i * Character.SIZE + j] = bits[j];
+                array[i * cSize + j] = bits[j];
             }
         }
         return array;
@@ -73,10 +76,10 @@ public class TextMessage {
 
         for(int i = 0; i < (bitArray.length >> 4); i++) // For every 16-bit array in bitArray
         {
-            boolean[] array = new boolean[16];
-            for(int j = 0; j < 16; j++) // Decode the array and converts it into a character
+            boolean[] array = new boolean[cSize];
+            for(int j = 0; j < cSize; j++) // Decode the array and converts it into a character
             {
-                array[j] = bitArray[i * 16 + j];
+                array[j] = bitArray[i * cSize + j];
             }
             characters[i] = (char) bitArrayToInt(array);
         }
