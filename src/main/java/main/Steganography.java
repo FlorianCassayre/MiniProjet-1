@@ -10,6 +10,11 @@ public class Steganography {
      * image ********************************************
      */
 
+    private static final int RIGHT = 0;
+    private static final int DOWN = 1;
+    private static final int LEFT = 2;
+    private static final int UP = 3;
+
     /*
      * Methods to deal with the LSB
      */
@@ -208,13 +213,13 @@ public class Steganography {
             copy[line][row] = embedInLSB(cover[line][row], message[i]); // Replacement
 
             // Turns around if the cursor reaches a border
-            if(row == maxRow && dir == 0)
+            if(row == maxRow && dir == RIGHT)
                 minLine++;
-            else if(line == maxLine && dir == 1)
+            else if(line == maxLine && dir == DOWN)
                 maxRow--;
-            else if(row == minRow && dir == 2)
+            else if(row == minRow && dir == LEFT)
                 maxLine--;
-            else if(line == minLine && dir == 3)
+            else if(line == minLine && dir == UP)
                 minRow++;
             else
                 dir--; // Decrementing (will be incremented again afterwards to restore the state back)
@@ -245,13 +250,13 @@ public class Steganography {
             bits[i] = getLSB(hidden[line][row]); // Replacement
 
             // Turns around if the cursor reaches a border
-            if(row == maxRow && dir == 0)
+            if(row == maxRow && dir == RIGHT)
                 minLine++;
-            else if(line == maxLine && dir == 1)
+            else if(line == maxLine && dir == DOWN)
                 maxRow--;
-            else if(row == minRow && dir == 2)
+            else if(row == minRow && dir == LEFT)
                 maxLine--;
-            else if(line == minLine && dir == 3)
+            else if(line == minLine && dir == UP)
                 minRow++;
             else
                 dir--; // Decrementing (will be incremented again afterwards to restore the state back)
@@ -272,9 +277,9 @@ public class Steganography {
     public static int projectionX(int direction)
     {
         direction = (direction + 4) % 4; // Positive modulo 4
-        if(direction == 0)
+        if(direction == RIGHT)
             return 1;
-        if(direction == 2)
+        if(direction == LEFT)
             return -1;
         return 0;
     }
@@ -287,9 +292,9 @@ public class Steganography {
     public static int projectionY(int direction)
     {
         direction = (direction + 4) % 4; // Positive modulo 4
-        if(direction == 1)
+        if(direction == DOWN)
             return 1;
-        if(direction == 3)
+        if(direction == UP)
             return -1;
         return 0;
     }
