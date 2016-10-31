@@ -55,10 +55,7 @@ public class TextMessage {
         {
             final char c = message.charAt(i);
             final boolean[] bits = intToBitArray(c, cSize);
-            for(int j = 0; j < cSize; j++) // Encode the 16-bit character
-            {
-                array[i * cSize + j] = bits[j];
-            }
+            System.arraycopy(bits, 0, array, i * 16, cSize);
         }
         return array;
     }
@@ -77,13 +74,10 @@ public class TextMessage {
         for(int i = 0; i < (bitArray.length >> 4); i++) // For every 16-bit array in bitArray
         {
             boolean[] array = new boolean[cSize];
-            for(int j = 0; j < cSize; j++) // Decode the array and converts it into a character
-            {
-                array[j] = bitArray[i * cSize + j];
-            }
+            System.arraycopy(bitArray, i * 16, array, 0, cSize);
             characters[i] = (char) bitArrayToInt(array);
         }
-        return new String(characters);//.replace("\r", ""); // Formerly used to remove unwanted characters that prevented the message to be read
+        return new String(characters).replace("\r", ""); // Formerly used to remove unwanted characters that prevented the message to be read
     }
 
 }
