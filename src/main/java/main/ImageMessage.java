@@ -1,7 +1,6 @@
 package main;
-/**
- * @author
- */
+
+
 public final class ImageMessage {
 
 
@@ -61,7 +60,7 @@ public final class ImageMessage {
 
     /**
      * @param gray an integer between 0 and 255
-     * @param threshold
+     * @param threshold the threshold
      * @return true if gray is greater or equal to threshold, false otherwise
      */
     public static boolean getBW(int gray, int threshold) {
@@ -198,19 +197,19 @@ public final class ImageMessage {
     public static boolean[] bwImageToBitArray(boolean[][] bwImage) {
         assert Utils.isImage(bwImage);
 
-        boolean[] array = new boolean[32 * 2 + bwImage.length * bwImage[0].length]; // All the data (hence height + width + bwImage)
-        boolean[] height = TextMessage.intToBitArray(bwImage.length, 32); // 32-bit integer to store height
-        boolean[] width = TextMessage.intToBitArray(bwImage[0].length, 32); // 32-bit integer to store width
-        for(int i = 0; i < 32; i++) // Encode height
+        boolean[] array = new boolean[Integer.SIZE * 2 + bwImage.length * bwImage[0].length]; // All the data (hence height + width + bwImage)
+        boolean[] height = TextMessage.intToBitArray(bwImage.length, Integer.SIZE); // 32-bit integer to store height
+        boolean[] width = TextMessage.intToBitArray(bwImage[0].length, Integer.SIZE); // 32-bit integer to store width
+        for(int i = 0; i < Integer.SIZE; i++) // Encode height
             array[i] = height[i];
-        for(int i = 0; i < 32; i++) // Encode width
-            array[32 + i] = width[i];
+        for(int i = 0; i < Integer.SIZE; i++) // Encode width
+            array[Integer.SIZE + i] = width[i];
         int i = 0;
         for(int line = 0; line < bwImage.length; line++) // Encode bwImage
         {
             for(int row = 0; row < bwImage[0].length; row++)
             {
-                array[32 * 2 + i] = bwImage[line][row];
+                array[Integer.SIZE * 2 + i] = bwImage[line][row];
                 i++;
             }
         }
@@ -224,16 +223,16 @@ public final class ImageMessage {
      * @see ImageMessage#bwImageToBitArray(boolean[][])
      */
     public static boolean[][] bitArrayToImage(boolean[] bitArray) {
-        assert bitArray != null && bitArray.length >= 32 * 2; // Checks if the array contains height and width data
+        assert bitArray != null && bitArray.length >= Integer.SIZE * 2; // Checks if the array contains height and width data
 
-        boolean[] bitsHeight = new boolean[32], bitsWidth = new boolean[32];
-        for(int i = 0; i < 32; i++) // Decode height
+        boolean[] bitsHeight = new boolean[Integer.SIZE], bitsWidth = new boolean[Integer.SIZE];
+        for(int i = 0; i < Integer.SIZE; i++) // Decode height
             bitsHeight[i] = bitArray[i];
-        for(int i = 0; i < 32; i++) // Decode width
-            bitsWidth[i] = bitArray[32 + i];
+        for(int i = 0; i < Integer.SIZE; i++) // Decode width
+            bitsWidth[i] = bitArray[Integer.SIZE + i];
         final int height = TextMessage.bitArrayToInt(bitsHeight), width = TextMessage.bitArrayToInt(bitsWidth);
 
-        assert bitArray.length >= 32 * 2 + width * height; // Checks if the data to read corresponds to the length specified
+        assert bitArray.length >= Integer.SIZE * 2 + width * height; // Checks if the data to read corresponds to the length specified
 
         boolean[][] array = new boolean[height][width];
         int i = 0;
@@ -241,7 +240,7 @@ public final class ImageMessage {
         {
             for(int row = 0; row < width; row++)
             {
-                array[line][row] = bitArray[64 + i];
+                array[line][row] = bitArray[Integer.SIZE * 2 + i];
                 i++;
             }
         }
@@ -254,7 +253,7 @@ public final class ImageMessage {
      * @param value the color value to process
      * @return a value between 0 and 255
      */
-    public static int safeColor(int value)
+    private static int safeColor(int value)
     {
         if(value < 0)
             value = 0;
@@ -268,7 +267,7 @@ public final class ImageMessage {
      * @param rgb the packet RBG color
      * @return a packet RBG color without alpha
      */
-    public static int clearAlpha(int rgb)
+    private static int clearAlpha(int rgb)
     {
         return rgb & 0x00ffffff;
     }

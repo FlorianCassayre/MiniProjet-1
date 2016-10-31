@@ -10,6 +10,8 @@ public class Steganography {
      * image ********************************************
      */
 
+    private static final int DIRECTIONS = 4;
+
     private static final int RIGHT = 0;
     private static final int DOWN = 1;
     private static final int LEFT = 2;
@@ -223,7 +225,7 @@ public class Steganography {
                 minRow++;
             else
                 dir--; // Decrementing (will be incremented again afterwards to restore the state back)
-            dir = (dir + 1) % 4; // Incrementing and modulo 4
+            dir = (dir + 1) % DIRECTIONS; // Incrementing and modulo 4
 
             row += projectionX(dir);
             line += projectionY(dir);
@@ -260,7 +262,7 @@ public class Steganography {
                 minRow++;
             else
                 dir--; // Decrementing (will be incremented again afterwards to restore the state back)
-            dir = (dir + 1) % 4; // Incrementing and modulo 4
+            dir = (dir + 1) % DIRECTIONS; // Incrementing and modulo 4
 
             row += projectionX(dir);
             line += projectionY(dir);
@@ -274,9 +276,9 @@ public class Steganography {
      * @param direction a direction between 0 and 4 (excluded)
      * @return the x projection
      */
-    public static int projectionX(int direction)
+    private static int projectionX(int direction)
     {
-        direction = (direction + 4) % 4; // Positive modulo 4
+        direction = getDirectionModulo(direction); // Positive modulo 4
         if(direction == RIGHT)
             return 1;
         if(direction == LEFT)
@@ -289,9 +291,9 @@ public class Steganography {
      * @param direction a direction between 0 and 4 (excluded)
      * @return the y projection
      */
-    public static int projectionY(int direction)
+    private static int projectionY(int direction)
     {
-        direction = (direction + 4) % 4; // Positive modulo 4
+        direction = getDirectionModulo(direction); // Positive modulo 4
         if(direction == DOWN)
             return 1;
         if(direction == UP)
@@ -299,5 +301,14 @@ public class Steganography {
         return 0;
     }
 
+    /**
+     * Returns the positive modulo of this direction
+     * @param direction the direction (any integer)
+     * @return an integer between 0 and 4 (excluded)
+     */
+    private static int getDirectionModulo(int direction)
+    {
+        return (direction + DIRECTIONS) % DIRECTIONS;
+    }
 }
 

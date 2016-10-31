@@ -69,15 +69,15 @@ public class TextMessage {
     public static String bitArrayToString(boolean[] bitArray) {
         assert bitArray != null;
 
-        char[] characters = new char[bitArray.length >> 4];
+        char[] characters = new char[bitArray.length / Character.SIZE];
 
-        for(int i = 0; i < (bitArray.length >> 4); i++) // For every 16-bit array in bitArray
+        for(int i = 0; i < characters.length; i++) // For every 16-bit array in bitArray
         {
             boolean[] array = new boolean[cSize];
-            System.arraycopy(bitArray, i * 16, array, 0, cSize);
+            System.arraycopy(bitArray, i * Character.SIZE, array, 0, cSize);
             characters[i] = (char) bitArrayToInt(array);
         }
-        return new String(characters).replace("\r", ""); // Formerly used to remove unwanted characters that prevented the message to be read
+        return new String(characters); //.replace("\r", ""); // Formerly used to remove unwanted characters that prevented the message to be read
     }
 
 }
