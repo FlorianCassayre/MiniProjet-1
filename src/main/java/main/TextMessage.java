@@ -47,14 +47,14 @@ public class TextMessage {
     public static boolean[] stringToBitArray(String message) {
         assert message != null;
 
-        boolean[] array = new boolean[message.length() * 16];
+        boolean[] array = new boolean[message.length() * Character.SIZE];
         for(int i = 0; i < message.length(); i++) // For every characters in message
         {
             final char c = message.charAt(i);
-            final boolean[] bits = intToBitArray(c, 16);
-            for(int j = 0; j < 16; j++) // Encode the 16-bit character
+            final boolean[] bits = intToBitArray(c, Character.SIZE);
+            for(int j = 0; j < Character.SIZE; j++) // Encode the 16-bit character
             {
-                array[i * 16 + j] = bits[j];
+                array[i * Character.SIZE + j] = bits[j];
             }
         }
         return array;
