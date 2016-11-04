@@ -1,7 +1,5 @@
 package main;
 
-import java.util.Arrays;
-
 public class Steganography {
 
     /*
@@ -9,13 +7,6 @@ public class Steganography {
      * Part 1b: embed/reveal BW
      * image ********************************************
      */
-
-    private static final int DIRECTIONS = 4;
-
-    private static final int RIGHT = 0;
-    private static final int DOWN = 1;
-    private static final int LEFT = 2;
-    private static final int UP = 3;
 
     /*
      * Methods to deal with the LSB
@@ -207,28 +198,13 @@ public class Steganography {
             for(int row = 0; row < cover[0].length; row++)
                 copy[line][row] = cover[line][row];
 
-        int minLine = 0, maxLine = cover.length - 1, minRow = 0, maxRow = cover[0].length - 1;
-        int line = 0, row = 0;
-        int dir = 0;
+        final SpiralCursor cursor = new SpiralCursor(cover.length, cover[0].length);
+
         for(int i = 0; i < message.length; i++) // For every character
         {
-            copy[line][row] = embedInLSB(cover[line][row], message[i]); // Replacement
+            copy[cursor.getLine()][cursor.getRow()] = embedInLSB(cover[cursor.getLine()][cursor.getRow()], message[i]); // Replacement
 
-            // Turns around if the cursor reaches a border
-            if(row == maxRow && dir == RIGHT)
-                minLine++;
-            else if(line == maxLine && dir == DOWN)
-                maxRow--;
-            else if(row == minRow && dir == LEFT)
-                maxLine--;
-            else if(line == minLine && dir == UP)
-                minRow++;
-            else
-                dir--; // Decrementing (will be incremented again afterwards to restore the state back)
-            dir = (dir + 1) % DIRECTIONS; // Incrementing and modulo 4
-
-            row += projectionX(dir);
-            line += projectionY(dir);
+            cursor.step();
         }
 
         return copy;
@@ -244,71 +220,16 @@ public class Steganography {
 
         boolean[] bits = new boolean[hidden.length * hidden[0].length];
 
-        int minLine = 0, maxLine = hidden.length - 1, minRow = 0, maxRow = hidden[0].length - 1;
-        int line = 0, row = 0;
-        int dir = 0;
+        final SpiralCursor cursor = new SpiralCursor(hidden.length, hidden[0].length);
+
         for(int i = 0; i < bits.length; i++)
         {
-            bits[i] = getLSB(hidden[line][row]); // Replacement
+            bits[i] = getLSB(hidden[cursor.getLine()][cursor.getRow()]); // Replacement
 
-            // Turns around if the cursor reaches a border
-            if(row == maxRow && dir == RIGHT)
-                minLine++;
-            else if(line == maxLine && dir == DOWN)
-                maxRow--;
-            else if(row == minRow && dir == LEFT)
-                maxLine--;
-            else if(line == minLine && dir == UP)
-                minRow++;
-            else
-                dir--; // Decrementing (will be incremented again afterwards to restore the state back)
-            dir = (dir + 1) % DIRECTIONS; // Incrementing and modulo 4
-
-            row += projectionX(dir);
-            line += projectionY(dir);
-        } // TODO: cleaning
+            cursor.step();
+        }
 
         return bits;
-    }
-
-    /**
-     * Projects the direction on the X-axis
-     * @param direction a direction between 0 and 4 (excluded)
-     * @return the x projection
-     */
-    private static int projectionX(int direction)
-    {
-        direction = getDirectionModulo(direction); // Positive modulo 4
-        if(direction == RIGHT)
-            return 1;
-        if(direction == LEFT)
-            return -1;
-        return 0;
-    }
-
-    /**
-     * Projects the direction on the Y-axis
-     * @param direction a direction between 0 and 4 (excluded)
-     * @return the y projection
-     */
-    private static int projectionY(int direction)
-    {
-        direction = getDirectionModulo(direction); // Positive modulo 4
-        if(direction == DOWN)
-            return 1;
-        if(direction == UP)
-            return -1;
-        return 0;
-    }
-
-    /**
-     * Returns the positive modulo of this direction
-     * @param direction the direction (any integer)
-     * @return an integer between 0 and 4 (excluded)
-     */
-    private static int getDirectionModulo(int direction)
-    {
-        return (direction + DIRECTIONS) % DIRECTIONS;
     }
 }
 
