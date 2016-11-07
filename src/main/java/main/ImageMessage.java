@@ -78,7 +78,7 @@ public final class ImageMessage {
      * @see #getBlue
      */
     public static int getRGB(int red, int green, int blue) {
-        return (safeColor(red) << 16) + (safeColor(green) << 8) + safeColor(blue); // RGB 0x00RRGGBB
+        return (safeColor(red) << 16) | (safeColor(green) << 8) | safeColor(blue); // RGB 0x00RRGGBB
     }
 
     /**
@@ -99,7 +99,7 @@ public final class ImageMessage {
     * and encoding of white otherwise
     */
     public static int getRGB(boolean value) {
-        final int color = value ? 255 : 0;
+        final int color = value ? 0xff : 0;
         return getRGB(color, color, color);
     }
 

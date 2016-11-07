@@ -9,7 +9,10 @@ public class TextMessage {
      * ********************************************
      */
 
-    private static final int cSize=Character.SIZE;
+    /**
+     * In case this needs to be changed.
+     */
+    private static final int CHARACTER_LENGTH = Character.SIZE;
 
     /**
      * Converts an integer to its binary representation
@@ -50,12 +53,12 @@ public class TextMessage {
     public static boolean[] stringToBitArray(String message) {
         assert message != null;
 
-        boolean[] array = new boolean[message.length() * cSize];
+        boolean[] array = new boolean[message.length() * CHARACTER_LENGTH];
         for(int i = 0; i < message.length(); i++) // For every characters in message
         {
             final char c = message.charAt(i);
-            final boolean[] bits = intToBitArray(c, cSize);
-            System.arraycopy(bits, 0, array, i * 16, cSize);
+            final boolean[] bits = intToBitArray(c, CHARACTER_LENGTH);
+            System.arraycopy(bits, 0, array, i * 16, CHARACTER_LENGTH);
         }
         return array;
     }
@@ -69,12 +72,12 @@ public class TextMessage {
     public static String bitArrayToString(boolean[] bitArray) {
         assert bitArray != null;
 
-        char[] characters = new char[bitArray.length / Character.SIZE];
+        char[] characters = new char[bitArray.length / CHARACTER_LENGTH];
 
         for(int i = 0; i < characters.length; i++) // For every 16-bit array in bitArray
         {
-            boolean[] array = new boolean[cSize];
-            System.arraycopy(bitArray, i * Character.SIZE, array, 0, cSize);
+            boolean[] array = new boolean[CHARACTER_LENGTH];
+            System.arraycopy(bitArray, i * CHARACTER_LENGTH, array, 0, CHARACTER_LENGTH);
             characters[i] = (char) bitArrayToInt(array);
         }
         return new String(characters); //.replace("\r", ""); // Formerly used to remove unwanted characters that prevented the message to be read
