@@ -58,7 +58,7 @@ public class TextMessage {
         {
             final char c = message.charAt(i);
             final boolean[] bits = intToBitArray(c, CHARACTER_LENGTH);
-            System.arraycopy(bits, 0, array, i * 16, CHARACTER_LENGTH);
+            System.arraycopy(bits, 0, array, i * CHARACTER_LENGTH, CHARACTER_LENGTH);
         }
         return array;
     }

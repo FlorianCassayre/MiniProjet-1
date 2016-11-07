@@ -200,9 +200,9 @@ public class Steganography {
 
         final SpiralCursor cursor = new SpiralCursor(cover.length, cover[0].length);
 
-        for(int i = 0; i < message.length; i++) // For every character
+        for(boolean bit : message)
         {
-            copy[cursor.getLine()][cursor.getRow()] = embedInLSB(cover[cursor.getLine()][cursor.getRow()], message[i]); // Replacement
+            copy[cursor.getLine()][cursor.getRow()] = embedInLSB(cover[cursor.getLine()][cursor.getRow()], bit); // Replacement
 
             cursor.step();
         }
