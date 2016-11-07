@@ -12,16 +12,16 @@ public class SpiralCursor
     private static final int LEFT = 2;
     private static final int UP = 3;
 
-    private int row = 0, line = 0; // Top left corner
+    private int col = 0, row = 0; // Top left corner
     private int direction = RIGHT; // Starts by moving to the right side
-    private int minLine, maxLine, minRow, maxRow;
+    private int minRow, maxRow, minCol, maxCol;
 
-    public SpiralCursor(int lines, int rows)
+    public SpiralCursor(int rows, int cols)
     {
-        minLine = 0;
-        maxLine = lines - 1;
         minRow = 0;
         maxRow = rows - 1;
+        minCol = 0;
+        maxCol = cols - 1;
     }
 
     /**
@@ -29,20 +29,29 @@ public class SpiralCursor
      */
     public void step()
     {
-        if(row == maxRow && direction == RIGHT)
-            minLine++;
-        else if(line == maxLine && direction == DOWN)
-            maxRow--;
-        else if(row == minRow && direction == LEFT)
-            maxLine--;
-        else if(line == minLine && direction == UP)
+        if(col == maxCol && direction == RIGHT)
             minRow++;
+        else if(row == maxRow && direction == DOWN)
+            maxCol--;
+        else if(col == minCol && direction == LEFT)
+            maxRow--;
+        else if(row == minRow && direction == UP)
+            minCol++;
         else
             direction--; // Decrementing (will be incremented again afterwards to restore the state back)
         direction = (direction + 1) % DIRECTIONS; // Incrementing and modulo 4
 
-        row += projectionX(direction);
-        line += projectionY(direction);
+        col += projectionX(direction);
+        row += projectionY(direction);
+    }
+
+    /**
+     * Gets the current col
+     * @return the current col
+     */
+    public int getCol()
+    {
+        return col;
     }
 
     /**
@@ -52,15 +61,6 @@ public class SpiralCursor
     public int getRow()
     {
         return row;
-    }
-
-    /**
-     * Gets the current line
-     * @return the current line
-     */
-    public int getLine()
-    {
-        return line;
     }
 
     /**

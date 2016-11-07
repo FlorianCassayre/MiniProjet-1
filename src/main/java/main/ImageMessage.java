@@ -114,11 +114,11 @@ public final class ImageMessage {
         assert Utils.isImage(image);
 
         int[][] grayscale = new int[image.length][image[0].length];
-        for(int line = 0; line < image.length; line++)
+        for(int row = 0; row < image.length; row++)
         {
-            for(int row = 0; row < image[0].length; row++)
+            for(int col = 0; col < image[0].length; col++)
             {
-                grayscale[line][row] = getGray(image[line][row]);
+                grayscale[row][col] = getGray(image[row][col]);
             }
         }
         return grayscale;
@@ -134,11 +134,11 @@ public final class ImageMessage {
         assert Utils.isImage(gray);
 
         int[][] packed = new int[gray.length][gray[0].length];
-        for(int line = 0; line < gray.length; line++)
+        for(int row = 0; row < gray.length; row++)
         {
-            for(int row = 0; row < gray[0].length; row++)
+            for(int col = 0; col < gray[0].length; col++)
             {
-                packed[line][row] = getRGB(gray[line][row]);
+                packed[row][col] = getRGB(gray[row][col]);
             }
         }
         return packed;
@@ -154,11 +154,11 @@ public final class ImageMessage {
         assert Utils.isImage(gray);
 
         boolean[][] bw = new boolean[gray.length][gray[0].length];
-        for(int line = 0; line < gray.length; line++)
+        for(int row = 0; row < gray.length; row++)
         {
-            for(int row = 0; row < gray[0].length; row++)
+            for(int col = 0; col < gray[0].length; col++)
             {
-                bw[line][row] = getBW(gray[line][row], threshold);
+                bw[row][col] = getBW(gray[row][col], threshold);
             }
         }
         return bw;
@@ -173,11 +173,11 @@ public final class ImageMessage {
         assert Utils.isImage(image);
 
         int[][] packed = new int[image.length][image[0].length];
-        for(int line = 0; line < image.length; line++)
+        for(int row = 0; row < image.length; row++)
         {
-            for(int row = 0; row < image[0].length; row++)
+            for(int col = 0; col < image[0].length; col++)
             {
-                packed[line][row] = getRGB(image[line][row]);
+                packed[row][col] = getRGB(image[row][col]);
             }
         }
         return packed;
@@ -205,11 +205,11 @@ public final class ImageMessage {
         System.arraycopy(bitsWidth, 0, array, Integer.SIZE, Integer.SIZE); // Encode width
 
         int i = 0;
-        for(int line = 0; line < bwImage.length; line++) // Encode bwImage
+        for(int row = 0; row < bwImage.length; row++) // Encode bwImage
         {
-            for(int row = 0; row < bwImage[0].length; row++)
+            for(int col = 0; col < bwImage[0].length; col++)
             {
-                array[Integer.SIZE * 2 + i] = bwImage[line][row];
+                array[Integer.SIZE * 2 + i] = bwImage[row][col];
                 i++;
             }
         }
@@ -236,11 +236,11 @@ public final class ImageMessage {
 
         boolean[][] array = new boolean[height][width];
         int i = 0;
-        for(int line = 0; line < height; line++) // Decode bwImage
+        for(int row = 0; row < height; row++) // Decode bwImage
         {
-            for(int row = 0; row < width; row++)
+            for(int col = 0; col < width; col++)
             {
-                array[line][row] = bitArray[Integer.SIZE * 2 + i];
+                array[row][col] = bitArray[Integer.SIZE * 2 + i];
                 i++;
             }
         }

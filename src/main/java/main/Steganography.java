@@ -44,14 +44,14 @@ public class Steganography {
 
         int[][] copy = new int[cover.length][cover[0].length];
 
-        for(int line = 0; line < cover.length; line++) // For every pixel
+        for(int row = 0; row < cover.length; row++) // For every pixel
         {
-            for(int row = 0; row < cover[0].length; row++)
+            for(int col = 0; col < cover[0].length; col++)
             {
-                boolean bit = getLSB(cover[line][row]);
-                if(message.length > 0 && line < message.length && row < message[0].length) // Checks if the message is in the bounds
-                    bit = message[line][row];
-                copy[line][row] = embedInLSB(cover[line][row], bit); // Embeds message or copy the cover
+                boolean bit = getLSB(cover[row][col]);
+                if(message.length > 0 && row < message.length && col < message[0].length) // Checks if the message is in the bounds
+                    bit = message[row][col];
+                copy[row][col] = embedInLSB(cover[row][col], bit); // Embeds message or copy the cover
             }
         }
         return copy;
@@ -67,11 +67,11 @@ public class Steganography {
 
         boolean[][] reveal = new boolean[cover.length][cover[0].length];
 
-        for(int line = 0; line < cover.length; line++)
+        for(int row = 0; row < cover.length; row++)
         {
-            for(int row = 0; row < cover[0].length; row++)
+            for(int col = 0; col < cover[0].length; col++)
             {
-                reveal[line][row] = getLSB(cover[line][row]); // Get the least significant bit
+                reveal[row][col] = getLSB(cover[row][col]); // Get the least significant bit
             }
         }
         return reveal;
@@ -96,11 +96,11 @@ public class Steganography {
 
         int[][] copy = new int[cover.length][cover[0].length];
         int i = 0;
-        for(int line = 0; line < cover.length; line++)
+        for(int row = 0; row < cover.length; row++)
         {
-            for(int row = 0; row < cover[0].length; row++)
+            for(int col = 0; col < cover[0].length; col++)
             {
-                copy[line][row] = i < message.length ? embedInLSB(cover[line][row], message[i]) : cover[line][row]; // If the message is in the bounds, embeds it else copy the cover
+                copy[row][col] = i < message.length ? embedInLSB(cover[row][col], message[i]) : cover[row][col]; // If the message is in the bounds, embeds it else copy the cover
                 i++;
             }
         }
@@ -117,11 +117,11 @@ public class Steganography {
 
         boolean[] array = new boolean[cover.length * cover[0].length];
         int i = 0;
-        for(int line = 0; line < cover.length; line++)
+        for(int row = 0; row < cover.length; row++)
         {
-            for(int row = 0; row < cover[0].length; row++)
+            for(int col = 0; col < cover[0].length; col++)
             {
-                array[i] = getLSB(cover[line][row]);
+                array[i] = getLSB(cover[row][col]);
                 i++;
             }
         }
@@ -194,15 +194,15 @@ public class Steganography {
         assert cover.length * cover[0].length >= message.length; // Checks if the message is not too long
 
         int[][] copy = new int[cover.length][cover[0].length];
-        for(int line = 0; line < cover.length; line++) // Copy the cover
-            for(int row = 0; row < cover[0].length; row++)
-                copy[line][row] = cover[line][row];
+        for(int row = 0; row < cover.length; row++) // Copy the cover
+            for(int col = 0; col < cover[0].length; col++)
+                copy[row][col] = cover[row][col];
 
         final SpiralCursor cursor = new SpiralCursor(cover.length, cover[0].length);
 
         for(boolean bit : message)
         {
-            copy[cursor.getLine()][cursor.getRow()] = embedInLSB(cover[cursor.getLine()][cursor.getRow()], bit); // Replacement
+            copy[cursor.getRow()][cursor.getCol()] = embedInLSB(cover[cursor.getRow()][cursor.getCol()], bit); // Replacement
 
             cursor.step();
         }
@@ -224,7 +224,7 @@ public class Steganography {
 
         for(int i = 0; i < bits.length; i++)
         {
-            bits[i] = getLSB(hidden[cursor.getLine()][cursor.getRow()]); // Replacement
+            bits[i] = getLSB(hidden[cursor.getRow()][cursor.getCol()]); // Replacement
 
             cursor.step();
         }
