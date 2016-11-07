@@ -198,12 +198,12 @@ public final class ImageMessage {
         assert Utils.isImage(bwImage);
 
         boolean[] array = new boolean[Integer.SIZE * 2 + bwImage.length * bwImage[0].length]; // All the data (hence height + width + bwImage)
-        boolean[] height = TextMessage.intToBitArray(bwImage.length, Integer.SIZE); // 32-bit integer to store height
-        boolean[] width = TextMessage.intToBitArray(bwImage[0].length, Integer.SIZE); // 32-bit integer to store width
-        for(int i = 0; i < Integer.SIZE; i++) // Encode height
-            array[i] = height[i];
-        for(int i = 0; i < Integer.SIZE; i++) // Encode width
-            array[Integer.SIZE + i] = width[i];
+        boolean[] bitsHeight = TextMessage.intToBitArray(bwImage.length, Integer.SIZE); // 32-bit integer to store height
+        boolean[] bitsWidth = TextMessage.intToBitArray(bwImage[0].length, Integer.SIZE); // 32-bit integer to store width
+
+        System.arraycopy(bitsHeight, 0, array, 0, Integer.SIZE); // Encode height
+        System.arraycopy(bitsWidth, 0, array, Integer.SIZE, Integer.SIZE); // Encode width
+
         int i = 0;
         for(int line = 0; line < bwImage.length; line++) // Encode bwImage
         {
@@ -226,10 +226,10 @@ public final class ImageMessage {
         assert bitArray != null && bitArray.length >= Integer.SIZE * 2; // Checks if the array contains height and width data
 
         boolean[] bitsHeight = new boolean[Integer.SIZE], bitsWidth = new boolean[Integer.SIZE];
-        for(int i = 0; i < Integer.SIZE; i++) // Decode height
-            bitsHeight[i] = bitArray[i];
-        for(int i = 0; i < Integer.SIZE; i++) // Decode width
-            bitsWidth[i] = bitArray[Integer.SIZE + i];
+
+        System.arraycopy(bitArray, 0, bitsHeight, 0, Integer.SIZE); // Decode height
+        System.arraycopy(bitArray, Integer.SIZE, bitsWidth, 0, Integer.SIZE); // Decode width
+
         final int height = TextMessage.bitArrayToInt(bitsHeight), width = TextMessage.bitArrayToInt(bitsWidth);
 
         assert bitArray.length >= Integer.SIZE * 2 + width * height; // Checks if the data to read corresponds to the length specified
